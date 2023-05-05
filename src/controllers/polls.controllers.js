@@ -11,14 +11,14 @@ export async function pollPost(req, res) {
   }
 
   try {
-    const result = await db.collection("polls").insertOne({
+    await db.collection("polls").insertOne({
       title,
       expireAt: expireDate,
     });
 
     res.sendStatus(201);
   } catch (error) {
-    res.status(500).json({ error: error.message });
+    res.status(500).send(error);
   }
 }
 
@@ -32,4 +32,6 @@ export async function pollGet(req, res) {
   }
 }
 
+export async function pollChoiceGet(req, res){}
 
+export async function pollResultGet(req, res){}
