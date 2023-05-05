@@ -8,7 +8,7 @@ export async function choicePost(req, res) {
   try {
     const pollExist = await db
       .collection("polls")
-      .findOne({ _id: ObjectId(pollId) });
+      .findOne({ _id: new ObjectId(pollId) });
 
     const titleRepeated = await db.collection("choices").findOne({ title });
 
@@ -22,7 +22,7 @@ export async function choicePost(req, res) {
 
     await db.collection("choices").insertOne({
       title,
-      pollId: ObjectId(pollId),
+      pollId: new ObjectId(pollId),
     });
 
     res.sendStatus(201);
