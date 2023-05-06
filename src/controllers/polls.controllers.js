@@ -73,7 +73,25 @@ export async function pollResultGet(req, res) {
       .find({ pollId: new ObjectId(id) })
       .toArray();
 
-      
+    for (let choice of choiceExist) {
+      const vote = await db
+        .collection("votes")
+        .countDocuments({ choiceId: new ObjectId(choice._id) });
+
+      if (vote > result.votes) {
+        result.title = choice.title;
+        result.votes = vote;
+      }
+    }
+
+    const information = {
+      _id: id,
+      title: pollExist.title,
+      expireAt: pollExist.expireAt,
+      result,
+    };
+
+    res.status(200).send(information);
   } catch (error) {
     res.status(500).send(error);
   }
