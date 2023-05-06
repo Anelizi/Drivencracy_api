@@ -31,4 +31,33 @@ export async function choicePost(req, res) {
   }
 }
 
-export async function choiceVotePost(req, res) {}
+export async function choiceVotePost(req, res) {
+  const { id } = req.params;
+  
+  try {
+    const choiceExist = await db
+      .collection("choices")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!choiceExist) return res.status(404).send("Essa opção não existe");
+
+    const pollExist = await db
+      .collection("polls")
+      .findOne({ _id: new ObjectId(choiceExist.pollId) });
+
+    if (dayjs().isAfter(pollExist.expireAt)) {
+      return res.status(403).send("Enquete expirada");
+    }
+
+    await db
+      .collection("votes")
+      .insertOne({
+        choiceId: new ObjectId(id),
+        createdAt: dayjs().format("YYYY-MM-DD HH:mm"),
+      });
+
+      res.status(201).send("Voto registrado")
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
