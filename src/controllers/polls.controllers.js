@@ -53,4 +53,28 @@ export async function pollChoiceGet(req, res) {
   }
 }
 
-export async function pollResultGet(req, res) {}
+export async function pollResultGet(req, res) {
+  const { id } = req.params;
+
+  try {
+    const result = {
+      title: "Nenhuma das Opção foi a mais votada",
+      votes: 0,
+    };
+
+    const pollExist = await db
+      .collection("polls")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (!pollExist) return res.status(404).send("Enquete não existe");
+
+    const choiceExist = await db
+      .collection("choices")
+      .find({ pollId: new ObjectId(id) })
+      .toArray();
+
+      
+  } catch (error) {
+    res.status(500).send(error);
+  }
+}
